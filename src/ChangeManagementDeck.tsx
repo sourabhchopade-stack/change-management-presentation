@@ -799,7 +799,7 @@ const ShotViewport = styled.div`
 `;
 
 // Full-size view, so a screenshot can still answer a question in the room.
-const Lightbox = styled.div`
+const Lightbox = styled.div<{ $detail?: boolean }>`
   position: fixed;
   inset: 0;
   z-index: 50;
@@ -807,17 +807,21 @@ const Lightbox = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: ${p => (p.$detail ? 'flex-start' : 'center')};
   gap: 12px;
   padding: 24px;
+  overflow: auto;
   cursor: zoom-out;
 
   img {
-    max-width: 100%;
-    max-height: calc(100% - 40px);
+    width: ${p => (p.$detail ? '2200px' : 'auto')};
+    max-width: ${p => (p.$detail ? 'none' : '100%')};
+    max-height: ${p => (p.$detail ? 'none' : 'calc(100% - 40px)')};
+    height: auto;
     object-fit: contain;
     border-radius: 6px;
     background: ${PALETTE.white};
+    flex-shrink: 0;
   }
 `;
 
@@ -827,16 +831,68 @@ const LightboxCaption = styled.div`
   font-weight: 600;
 `;
 
-// ── Service blueprint slide: the picture fills the frame. Click opens it full size. ──
+// ── Service design slide: header, then the blueprint. Click the image to zoom. ──
 
-const BlueprintSlide = styled.button`
+const BlueprintSlide = styled.div`
   flex: 1;
   min-width: 0;
   min-height: 0;
-  margin: 0;
-  padding: ${u(24)};
-  border: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: ${u(28)} ${u(40)} ${u(20)};
   background: ${PALETTE.white};
+  gap: ${u(14)};
+
+  ${MOBILE} {
+    padding: 20px 16px 24px;
+    gap: 12px;
+  }
+`;
+
+const BlueprintHeader = styled.header`
+  flex-shrink: 0;
+  text-align: center;
+`;
+
+const BlueprintTitle = styled.h1`
+  margin: 0;
+  font-size: ${u(28)};
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: ${DECK.ink};
+
+  ${MOBILE} {
+    font-size: 22px;
+  }
+`;
+
+const BlueprintTitleSoft = styled.span`
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #5c6b7a;
+`;
+
+const BlueprintSubtitle = styled.p`
+  margin: ${u(6)} 0 0;
+  font-size: ${u(13)};
+  line-height: 1.4;
+  color: #5c6b7a;
+
+  ${MOBILE} {
+    font-size: 13px;
+  }
+`;
+
+const BlueprintImage = styled.button`
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
   cursor: zoom-in;
   display: flex;
 
@@ -845,11 +901,6 @@ const BlueprintSlide = styled.button`
     height: 100%;
     object-fit: contain;
     object-position: center;
-  }
-
-  ${MOBILE} {
-    padding: 16px;
-    min-height: 240px;
   }
 `;
 
@@ -1202,7 +1253,7 @@ const BLUEPRINT_URL = '';
 const BLUEPRINT_SHOT: Shot = {
   src: blueprintShot,
   icon: ImageIcon,
-  role: 'Service blueprint',
+  role: 'Service Design',
   caption: 'The agent’s steps, and who acts in each one',
   accent: PALETTE.blue[600],
   color: PALETTE.blue[700],
@@ -1589,10 +1640,24 @@ export default function ChangeManagementDeck() {
               </>
             )}
 
-            {/* 7 ── Service blueprint: the image only. Click opens it full size. */}
+            {/* 7 ── Service design: header, then the blueprint. Click the image to zoom. */}
             {slide === 6 && (
-              <BlueprintSlide type="button" onClick={() => setZoom(BLUEPRINT_SHOT)}>
-                <img src={BLUEPRINT_SHOT.src} alt="Service blueprint for Change Management" />
+              <BlueprintSlide>
+                <BlueprintHeader>
+                  <BlueprintTitle>
+                    Service Design <BlueprintTitleSoft>for Change Management</BlueprintTitleSoft>
+                  </BlueprintTitle>
+                  <BlueprintSubtitle>
+                    The agent’s steps to raise a change. Admin, CAB, approvers, and the implementor sit under the step they act in.
+                  </BlueprintSubtitle>
+                </BlueprintHeader>
+                <BlueprintImage
+                  type="button"
+                  aria-label="Zoom the service blueprint"
+                  onClick={() => setZoom(zoom ? null : BLUEPRINT_SHOT)}
+                >
+                  <img src={BLUEPRINT_SHOT.src} alt="Service blueprint for Change Management" />
+                </BlueprintImage>
               </BlueprintSlide>
             )}
 
@@ -1631,7 +1696,12 @@ export default function ChangeManagementDeck() {
       </Frame>
 
       {zoom && (
-        <Lightbox onClick={() => setZoom(null)} role="dialog" aria-modal="true">
+        <Lightbox
+          $detail={zoom === BLUEPRINT_SHOT}
+          onClick={() => setZoom(null)}
+          role="dialog"
+          aria-modal="true"
+        >
           <img src={zoom.src} alt={zoom.caption} />
           <LightboxCaption>
             {zoom.role} · {zoom.caption}
