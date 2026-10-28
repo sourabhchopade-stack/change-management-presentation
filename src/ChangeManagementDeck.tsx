@@ -699,20 +699,6 @@ const TakeawayLabel = styled.span`
 
 // ── Wide layout, for slides that need the full frame ─────────────────────────
 
-const WideSlide = styled.div`
-  flex: 1;
-  box-sizing: border-box;
-  padding: ${u(38)} ${u(44)};
-  display: flex;
-  flex-direction: column;
-  gap: ${u(14)};
-  min-width: 0;
-
-  ${MOBILE} {
-    padding: 24px 20px 32px;
-  }
-`;
-
 const WideTitle = styled.h1`
   font-size: ${u(28)};
   font-weight: 700;
