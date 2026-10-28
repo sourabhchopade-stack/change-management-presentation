@@ -841,53 +841,29 @@ const LightboxCaption = styled.div`
   font-weight: 600;
 `;
 
-// ── Service blueprint slide: header row with the live link, then the shot ────
+// ── Service blueprint slide: the picture fills the frame. Click opens it full size. ──
 
-const BlueprintHead = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: ${u(16)};
-
-  ${MOBILE} {
-    flex-direction: column;
-  }
-`;
-
-const BlueprintLink = styled.a`
-  display: inline-flex;
-  align-items: center;
-  gap: ${u(6)};
-  flex-shrink: 0;
-  box-sizing: border-box;
-  padding: ${u(8)} ${u(12)};
-  border: 1px solid ${PALETTE.grey[300]};
-  border-radius: ${u(6)};
+const BlueprintSlide = styled.button`
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: ${u(24)};
+  border: 0;
   background: ${PALETTE.white};
-  color: ${PALETTE.blue[700]};
-  font-size: ${u(12)};
-  font-weight: 600;
-  text-decoration: none;
-  cursor: pointer;
+  cursor: zoom-in;
+  display: flex;
 
-  svg {
-    width: ${u(13)};
-    height: ${u(13)};
-  }
-
-  &:hover {
-    border-color: ${PALETTE.blue[400]};
-    background: ${PALETTE.blue[100]};
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
   }
 
   ${MOBILE} {
-    font-size: 12px;
-    padding: 8px 12px;
-
-    svg {
-      width: 13px;
-      height: 13px;
-    }
+    padding: 16px;
+    min-height: 240px;
   }
 `;
 
@@ -1241,7 +1217,7 @@ const BLUEPRINT_SHOT: Shot = {
   src: blueprintShot,
   icon: ImageIcon,
   role: 'Service blueprint',
-  caption: '8 stages across admin, agent and AI flows',
+  caption: 'The agent’s steps, and who acts in each one',
   accent: PALETTE.blue[600],
   color: PALETTE.blue[700],
 };
@@ -1627,41 +1603,11 @@ export default function ChangeManagementDeck() {
               </>
             )}
 
-            {/* 7 ── Service blueprint */}
+            {/* 7 ── Service blueprint: the image only. Click opens it full size. */}
             {slide === 6 && (
-              <WideSlide>
-                <BlueprintHead>
-                  <div>
-                    <WideTitle>Service blueprint</WideTitle>
-                    <AccentRule />
-                  </div>
-                  {BLUEPRINT_URL ? (
-                    <BlueprintLink href={BLUEPRINT_URL} target="_blank" rel="noreferrer">
-                      <NewWindowIcon />
-                      Open the live blueprint
-                    </BlueprintLink>
-                  ) : null}
-                </BlueprintHead>
-                <ShotCard
-                  type="button"
-                  $accent={BLUEPRINT_SHOT.accent}
-                  onClick={() => setZoom(BLUEPRINT_SHOT)}
-                >
-                  <ShotLabel $color={BLUEPRINT_SHOT.color}>
-                    <ImageIcon />
-                    {BLUEPRINT_SHOT.role}
-                    <ShotCaption>
-                      {BLUEPRINT_SHOT.caption} · click to zoom
-                    </ShotCaption>
-                  </ShotLabel>
-                  <ShotViewport>
-                    <img
-                      src={BLUEPRINT_SHOT.src}
-                      alt="Service blueprint for Change Management across 8 stages"
-                    />
-                  </ShotViewport>
-                </ShotCard>
-              </WideSlide>
+              <BlueprintSlide type="button" onClick={() => setZoom(BLUEPRINT_SHOT)}>
+                <img src={BLUEPRINT_SHOT.src} alt="Service blueprint for Change Management" />
+              </BlueprintSlide>
             )}
 
             {/* 8 ── Close */}
